@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Queue Management System</title>
+    <style>
+        /* Add your custom CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .error {
+            color: red;
+        }
+
+        #queueNumber {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #007BFF;
+        }
+
+        #notification {
+            display: none;
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        #notification.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Queue Management System</h1>
+    
+    <form id="queueForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+        
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" required><br>
+        
+        <input type="submit" value="Get Queue Number">
+    </form>
+    
+    <div id="queueNumber"></div>
+    
+    <div id="notification">
+        <p>Your turn! Counter <span id="counterNumber"></span> is now ready.</p>
+    </div>
+
+    <script>
+        // JavaScript code to handle form submission
+        let currentQueueNumber = 1; // Initialize the queue number
+
+        document.getElementById("queueForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            
+            // Get form data
+            const name = document.getElementById("name").value;
+            const phone = document.getElementById("phone").value;
+
+            // Validate the form fields (you can add more specific validation)
+            if (!name || !phone) {
+                alert("Please fill in all the required fields.");
+                return;
+            }
+
+            // Use the current queue number
+            const queueNumber = currentQueueNumber++;
+
+            // Save patient data to local storage
+            const patientData = {
+                name: name,
+                phone: phone,
+                queueNumber: queueNumber,
+            };
+            localStorage.setItem(`patient_${queueNumber}`, JSON.stringify(patientData));
+
+            // Display the queue number
+            document.getElementById("queueNumber").innerHTML = `
+                <p>Your Queue Number is: <strong>${queueNumber}</strong></p>
+                <p>Please keep this number for reference.</p>
+            `;
+
+            // Clear the form for the next patient
+            document.getElementById("queueForm").reset();
+
+            // Simulate a notification (setTimeout for demonstration purposes)
+            setTimeout(() => {
+                // Show the notification
+                document.getElementById("notification").classList.add("show");
+
+                // Voice notification with queue number and counter
+                const msg = new SpeechSynthesisUtterance();
+                msg.text = `Queue number ${queueNumber}. Your turn! Counter number 1 is now ready.`;
+                window.speechSynthesis.speak(msg);
+
+                // Set the counter number in the notification
+                document.getElementById("counterNumber").textContent = "1";
+            }, 5000); // Notify after a 5-second delay (adjust as needed)
+        });
+    </script>
+</body>
+</html>
